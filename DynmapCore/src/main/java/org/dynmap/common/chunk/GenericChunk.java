@@ -43,11 +43,20 @@ public class GenericChunk {
 		}
 		return this.sections[idx];
 	}
-	
-    public final DynmapBlockState getBlockType(int x, int y, int z) {    	
-    	return getSection(y).blocks.getBlock(x, y, z);
-    }
-    public final DynmapBlockState getBlockType(GenericChunkPos pos) {    	
+
+	public final DynmapBlockState getBlockType(int x, int y, int z) {
+		int worldX = (x >= 0 && x < 16) ? ((cx << 4) + x) : x;
+		int worldZ = (z >= 0 && z < 16) ? ((cz << 4) + z) : z;
+		int localX = x & 15;
+		int localZ = z & 15;
+
+		if (CensorConfig.isCensored(worldX, y, worldZ)) {
+			return DynmapBlockState.getBaseStateByName("minecraft:bedrock");
+		}
+		return getSection(y).blocks.getBlock(localX, y, localZ);
+	}
+    public final DynmapBlockState getBlockType(GenericChunkPos pos) {
+
     	return getSection(pos.y).blocks.getBlock(pos);
     }
     public final int getBlockSkyLight(int x, int y, int z) {
